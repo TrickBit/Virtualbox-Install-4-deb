@@ -1,0 +1,68 @@
+#!/bin/bash
+
+sudo echo "sudoing.."
+
+
+codename="Not Set"
+tmpfile=$(mktemp -q /tmp/vbinst.XXXXXXXXX)
+if [ $? -ne 0 ]; then
+    echo "$0: Can't create temp file, bye.."
+    exit 1
+fi
+
+if type lsb_release >/dev/null 2>&1; then
+    # linuxbase.org
+    codename=$(lsb_release -sc)
+    OS=$(lsb_release -si)
+    VER=$(lsb_release -sr)
+elif [ -f /etc/lsb-release ]; then
+    # For some versions of Debian/Ubuntu without lsb_release command
+    . /etc/lsb-release
+    OS=$DISTRIB_ID
+    VER=$DISTRIB_RELEASE
+    codename=$DISTRIB_CODENAME
+fi
+
+if [[ "bullsey buster stretch jammy eoan bionic xenial" == *"${codename}"* ]]; then
+  echo -e "\ninstalling for ${OS} ${VER} '${codename}'"
+else
+  echo -e "\nUnspported version : ${codename} So quitting.."
+  exit
+fi
+
+echo -e "\nAdding Virtualbox sources ..."
+fn="/etc/apt/sources.list.d/virtualbox.list"
+aptline="deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian ${codename} contrib"
+
+if [ ! -f $fn ]; then
+  sudo touch $fn
+  #this gets sorted out :(
+  #sudo echo "# VirtualBox 7.0" | sudo tee -a $fn >/dev/null
+fi
+echo $aptline | sudo tee -a $fn >/dev/null
+cat $fn | sort -u > $tmpfile
+sudo cat $tmpfile  | sudo tee $fn >/dev/null
+echo -e "\n$fn contents.."
+sudo cat $fn
+
+
+gpgfn="/usr/share/keyrings/oracle-virtualbox-2016.gpg"
+
+if [ ! -f $gpgfn ]; then
+  echo -e "\nDownloading and installing the oracle public key for verifying the signatures"
+  wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | \
+    sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
+else
+   echo -e "\n$gpgfn already exists!"
+   echo "You may wish to inspect or remove the file and try again"
+   echo "definitely do this if you experient gpg errors"
+   # exit
+fi
+
+sudo apt update
+echo -e "\nYou may now install one of the following..\n"
+apt search virtualbox-
+echo -e "\nwith\n\nsudo apt install virtualbox-X.X"
+echo -e "\nreplacing X.X with one of the versions shown above"
+echo -e "\nIf no versions are shown something went wrong and you should probably check"
+echo -e "\nhttps://www.virtualbox.org/wiki/Linux_Downloads"
