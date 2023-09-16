@@ -8,7 +8,7 @@ sudo echo "sudoing.."
 codename="Not Set"
 tmpfile=$(mktemp -q /tmp/vbinst.XXXXXXXXX)
 if [ $? -ne 0 ]; then
-    echo "$0: Can't create temp file, bye.."
+    echo -e "$0\nCan't create temp file so quitting!"
     exit 1
 fi
 
