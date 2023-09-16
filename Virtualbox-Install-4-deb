@@ -2,8 +2,8 @@
 # GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 # see accompanying license.txt
 
-
 sudo echo "sudoing.."
+
 
 codename="Not Set"
 tmpfile=$(mktemp -q /tmp/vbinst.XXXXXXXXX)
@@ -55,7 +55,7 @@ if [ ! -f $gpgfn ]; then
   wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | \
     sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
 else
-   echo -e "\n$gpgfn already exists!"
+   echo -e "\n$gpgfn already exists!"echo "# Virtualbox-Install-4-deb" >> README.md
    echo "You may wish to inspect or remove the file and try again"
    echo "definitely do this if you experient gpg errors"
    # exit
@@ -63,7 +63,7 @@ fi
 
 sudo apt update
 echo -e "\nYou may now install one of the following..\n"
-apt search virtualbox-
+apt search virtualbox- 2>/dev/null | grep virtualbox-
 echo -e "\nwith\n\nsudo apt install virtualbox-X.X"
 echo -e "\nreplacing X.X with one of the versions shown above"
 echo -e "\nIf no versions are shown something went wrong and you should probably check"
