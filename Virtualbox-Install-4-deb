@@ -1,7 +1,9 @@
 #!/bin/bash
+# GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+# see accompanying license.txt
+
 
 sudo echo "sudoing.."
-
 
 codename="Not Set"
 tmpfile=$(mktemp -q /tmp/vbinst.XXXXXXXXX)
